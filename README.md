@@ -1,6 +1,6 @@
 # unsclock
 
-A simple Windows utility to prevent system sleep and display lock while a dialog box is open.
+A simple Windows utility to prevent system sleep and display lock while a dialog window is open.
 
 ---
 
@@ -8,7 +8,9 @@ A simple Windows utility to prevent system sleep and display lock while a dialog
 
 ### Overview
 
-`unsclock` is a lightweight Python tool for Windows that prevents the system from entering sleep mode or turning off the display (which often triggers the screen lock). It calls the Windows API `SetThreadExecutionState` and keeps the state active until you close the information dialog.
+`unsclock` is a lightweight Python tool for Windows that prevents the system from entering sleep mode or turning off the display (which often triggers the screen lock). It calls the Windows API `SetThreadExecutionState` and keeps the state active until you close the window.
+
+You can also dynamically toggle whether to prevent display turn-off (screen lock) using the checkbox in the window.
 
 No external dependencies are required; it only uses the Python standard library (`ctypes` and `tkinter`).
 
@@ -31,22 +33,28 @@ Or run it without a console window using `pythonw`:
 pythonw unsclock.py
 ```
 
-When launched, an information dialog titled **"Sleep Prevention - Info"** will appear:
+When launched, a window titled **"Sleep Prevention - Info"** will appear:
 
 > Sleep prevention is active.  
 > Click OK to stop and exit.
+>
+> [x] Prevent display turn-off (screen lock)
 
-While this dialog remains open, Windows will not automatically go to sleep or turn off the display. To end sleep prevention, simply click **OK** (or close the dialog).
+- **While the window remains open**: Windows will not automatically go to sleep.
+- **Prevent display turn-off (screen lock)** *(checked by default)*:
+  - **Checked**: Prevents both system sleep and display turn-off (`ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED`).
+  - **Unchecked**: Prevents system sleep only, allowing the display to turn off according to Windows settings (`ES_SYSTEM_REQUIRED`).
+- **To exit**: Click **OK**, press `Enter` / `Esc`, or close the window.
 
 ### How to Verify
 
-You can check whether `unsclock` is actively preventing sleep by running the following command in an **Administrator** Command Prompt or PowerShell while the dialog is open:
+You can check whether `unsclock` is actively preventing sleep by running the following command in an **Administrator** Command Prompt or PowerShell while the window is open:
 
 ```powershell
 powercfg /requests
 ```
 
-You will see `python.exe` (or `pythonw.exe`) listed under the `DISPLAY:` and `SYSTEM:` sections.
+You will see `python.exe` (or `pythonw.exe`) listed under `SYSTEM:` (and under `DISPLAY:` when the checkbox is checked).
 
 ### Development
 
@@ -73,7 +81,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ### 概要
 
-`unsclock` は、ダイアログを表示している間、Windows のシステムスリープおよび画面オフ（画面ロック）を抑制する軽量な Python ツールです。Windows API の `SetThreadExecutionState` を呼び出し、情報ダイアログが閉じられるまでの間、スリープ抑制状態を維持します。
+`unsclock` は、ウィンドウを表示している間、Windows のシステムスリープおよび画面オフ（画面ロック）を抑制する軽量な Python ツールです。Windows API の `SetThreadExecutionState` を呼び出し、ウィンドウが閉じられるまでの間、スリープ抑制状態を維持します。
+
+ウィンドウ内のチェックボタンを使って、画面オフ（画面ロック）の抑制を有効にするかどうかを動的に切り替えることも可能です。
 
 外部ライブラリへの依存はなく、Python の標準ライブラリ（`ctypes` および `tkinter`）のみで動作します。
 
@@ -96,22 +106,28 @@ python unsclock.py
 pythonw unsclock.py
 ```
 
-起動すると、**"Sleep Prevention - Info"** というタイトルの情報ダイアログが表示されます。
+起動すると、**"Sleep Prevention - Info"** というタイトルのウィンドウが表示されます。
 
 > Sleep prevention is active.  
 > Click OK to stop and exit.
+>
+> [x] Prevent display turn-off (screen lock)
 
-このダイアログが開いている間、Windows は自動的にスリープへ移行したりディスプレイの電源を切ったりしなくなります。スリープ抑制を終了するには、ダイアログの **OK** をクリック（またはダイアログを終了）してください。
+- **ウィンドウが開いている間**: Windows は自動的にシステムスリープへ移行しなくなります。
+- **Prevent display turn-off (screen lock)** *(デフォルトで ON)*:
+  - **チェック ON**: システムスリープと画面オフの両方を抑制します（`ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED`）。
+  - **チェック OFF**: システムスリープのみを抑制し、画面オフは Windows の電源設定に従って許可します（`ES_SYSTEM_REQUIRED`）。
+- **終了方法**: **OK** ボタンをクリックするか、`Enter` / `Esc` キーを押すか、ウィンドウを閉じてください。
 
 ### 動作確認方法
 
-スリープ抑制が有効に機能しているかどうかは、ダイアログを開いた状態で **管理者権限** のコマンドプロンプトまたは PowerShell から以下のコマンドを実行することで確認できます。
+スリープ抑制が有効に機能しているかどうかは、ウィンドウを開いた状態で **管理者権限** のコマンドプロンプトまたは PowerShell から以下のコマンドを実行することで確認できます。
 
 ```powershell
 powercfg /requests
 ```
 
-`DISPLAY:` および `SYSTEM:` の項目に、実行中の `python.exe`（または `pythonw.exe`）が表示されます。
+`SYSTEM:` の項目（およびチェック ON の場合は `DISPLAY:` の項目）に、実行中の `python.exe`（または `pythonw.exe`）が表示されます。
 
 ### 開発者向け情報
 
